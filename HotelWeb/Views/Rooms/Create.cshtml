@@ -1,0 +1,9 @@
+@model HotelWeb.Models.Room
+@{ ViewData["Title"] = "Add Room"; }
+
+<div class="card-box form-card">
+    <h3 class="mb-4 fw-bold">Add Room</h3>
+    <form asp-action="Create" method="post">
+        <partial name="_Form" model="Model" />
+    </form>
+</div>

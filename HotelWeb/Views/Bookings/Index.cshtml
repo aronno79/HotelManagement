@@ -1,0 +1,71 @@
+@model List<HotelWeb.Models.Booking>
+@{ ViewData["Title"] = "Bookings"; }
+
+<div class="page-header">
+    <div>
+        <h2>Bookings</h2>
+        <p>@Model.Count ta booking</p>
+    </div>
+    <a asp-action="Create" class="btn btn-brand"><i class="bi bi-calendar-plus"></i> New Booking</a>
+</div>
+
+<div class="card-box overflow-hidden">
+@if (!Model.Any())
+{
+    <div class="empty-state"><i class="bi bi-calendar-x"></i>Kono booking nai.</div>
+}
+else
+{
+    <div class="table-responsive">
+    <table class="table table-modern">
+        <thead>
+            <tr><th>Room</th><th>Guest</th><th>Check-in</th><th>Check-out</th><th>Total</th><th>Status</th><th class="text-end">Action</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var b in Model)
+        {
+            var cls = b.Status switch
+            {
+                "Booked" => "bg-soft-warning",
+                "CheckedIn" => "bg-soft-success",
+                "CheckedOut" => "bg-soft-primary",
+                "Cancelled" => "bg-soft-danger",
+                _ => "bg-soft-secondary"
+            };
+            <tr>
+                <td><strong>#@b.RoomNumber</strong></td>
+                <td>@b.GuestName</td>
+                <td>@b.CheckIn.ToString("dd MMM yyyy")</td>
+                <td>@b.CheckOut.ToString("dd MMM yyyy")</td>
+                <td><strong>৳@b.TotalPrice.ToString("N0")</strong></td>
+                <td><span class="badge-soft @cls">@b.Status</span></td>
+                <td class="text-end">
+                    @if (b.Status == "Booked")
+                    {
+                        <form asp-action="Status" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <input type="hidden" name="status" value="CheckedIn" />
+                            <button class="btn btn-sm btn-success"><i class="bi bi-box-arrow-in-right"></i> Check-in</button>
+                        </form>
+                        <form asp-action="Status" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <input type="hidden" name="status" value="Cancelled" />
+                            <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                        </form>
+                    }
+                    else if (b.Status == "CheckedIn")
+                    {
+                        <form asp-action="Status" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <input type="hidden" name="status" value="CheckedOut" />
+                            <button class="btn btn-sm btn-primary"><i class="bi bi-box-arrow-right"></i> Check-out</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+}
+</div>
